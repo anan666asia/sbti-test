@@ -1321,21 +1321,17 @@
     document.getElementById('sbti-test').scrollIntoView({ behavior: 'smooth' });
   });
 
-  // 为选项添加点击效果
+  // 选项点击视觉效果（由document-level click handler处理自动跳题）
   document.querySelectorAll('.option').forEach(option => {
     option.addEventListener('click', function() {
-      const radio = this.querySelector('input[type="radio"]');
-      if (radio) {
-        radio.checked = true;
-        
-        // 更新所有选项的样式
-        document.querySelectorAll('.option').forEach(opt => {
+      // 高亮当前选项，重置同组其他选项样式
+      const questionStep = this.closest('.question-step');
+      if (questionStep) {
+        questionStep.querySelectorAll('.option').forEach(opt => {
           opt.style.background = 'rgba(255,255,255,0.04)';
         });
-        
-        // 高亮当前选项
-        this.style.background = 'rgba(255,255,255,0.08)';
       }
+      this.style.background = 'rgba(255,255,255,0.08)';
     });
   });
 </script>
