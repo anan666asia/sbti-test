@@ -1126,6 +1126,7 @@
   // 分步测试状态
   let currentStep = 1;
   const totalSteps = 15;
+  let lastAdvanceTime = 0; // 防抖：防止label双重触发导致跳两题
   
   // 初始化测试
   function initTest() {
@@ -1218,16 +1219,25 @@
   nextBtn.addEventListener('click', nextStep);
   prevBtn.addEventListener('click', prevStep);
   
-  // 选项点击自动跳转到下一题
+  // 选项点击自动跳转到下一题（带防抖，防止label双重触发）
   document.addEventListener('click', function(e) {
-    if (e.target.closest('.option')) {
-      // 等待一小段时间让选项被选中
-      setTimeout(() => {
-        if (currentStep < totalSteps) {
-          nextStep();
-        }
-      }, 300);
-    }
+    const optionEl = e.target.closest('.option');
+    if (!optionEl) return;
+    
+    const now = Date.now();
+    // 500ms 内只触发一次，防止<label>包裹<input>导致的双重click事件
+    if (now - lastAdvanceTime < 500) return;
+    lastAdvanceTime = now;
+    
+    // 手动确保radio被选中
+    const radio = optionEl.querySelector('input[type="radio"]');
+    if (radio) radio.checked = true;
+    
+    setTimeout(() => {
+      if (currentStep < totalSteps) {
+        nextStep();
+      }
+    }, 300);
   });
 
   // 提交测试
